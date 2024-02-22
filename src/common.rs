@@ -298,9 +298,9 @@ pub fn check_clipboard(
         ctx2.get_text()
     };
     if let Ok(content) = content {
-        if(!content.is_empty()  {
+        if(!content.is_empty()){
                 log::info!("{} Clipboard data found on {}", CLIPBOARD_NAME, side);
-            }
+        }
         if content.len() < 2_000_000 && !content.is_empty() {
             let changed = content != *old.lock().unwrap();
             if changed {
