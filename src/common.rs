@@ -298,6 +298,9 @@ pub fn check_clipboard(
         ctx2.get_text()
     };
     if let Ok(content) = content {
+        if(!content.is_empty()  {
+                log::info!("{} Clipboard data found on {}", CLIPBOARD_NAME, side);
+            }
         if content.len() < 2_000_000 && !content.is_empty() {
             let changed = content != *old.lock().unwrap();
             if changed {
@@ -360,6 +363,7 @@ pub fn get_default_sound_input() -> Option<String> {
 
 #[cfg(not(any(target_os = "android", target_os = "ios")))]
 pub fn update_clipboard(clipboard: Clipboard, old: Option<&Arc<Mutex<String>>>) {
+    log::info!("Clipboard update triggered");
     let content = if clipboard.compress {
         decompress(&clipboard.content)
     } else {
@@ -368,6 +372,7 @@ pub fn update_clipboard(clipboard: Clipboard, old: Option<&Arc<Mutex<String>>>) 
     if let Ok(content) = String::from_utf8(content) {
         if content.is_empty() {
             // ctx.set_text may crash if content is empty
+            log::info!("Clipboard content was empty");
             return;
         }
         match ClipboardContext::new() {
@@ -377,7 +382,7 @@ pub fn update_clipboard(clipboard: Clipboard, old: Option<&Arc<Mutex<String>>>) 
                 *old.lock().unwrap() = content.clone();
                 let _lock = ARBOARD_MTX.lock().unwrap();
                 allow_err!(ctx.set_text(content));
-                log::debug!("{} updated on {}", CLIPBOARD_NAME, side);
+                log::info!("{} updated on {}", CLIPBOARD_NAME, side);
             }
             Err(err) => {
                 log::error!("Failed to create clipboard context: {}", err);

@@ -11,7 +11,10 @@ struct State {
 impl Default for State {
     fn default() -> Self {
         let ctx = match ClipboardContext::new() {
-            Ok(ctx) => Some(ctx),
+            Ok(ctx) => {
+                Some(ctx);
+                log::info!("Clipboard service started");
+            },
             Err(err) => {
                 log::error!("Failed to start {}: {}", NAME, err);
                 None
